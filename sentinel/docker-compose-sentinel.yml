@@ -1,0 +1,62 @@
+services:
+  master:
+    image: redis:latest
+    container_name: redis-master
+    network_mode: host
+    command: >
+      redis-server
+      --port 6379
+
+  slave:
+    image: redis:latest
+    container_name: redis-slave
+    network_mode: host
+    command: >
+      redis-server
+      --port 6380
+      --slaveof 127.0.0.1 6379
+
+  slave2:
+    image: redis:latest
+    container_name: redis-slave2
+    network_mode: host
+    command: >
+      redis-server
+      --port 6381
+      --slaveof 127.0.0.1 6379
+
+  sentinel1:
+    image: redis:latest
+    container_name: sentinel-1
+    network_mode: host
+    volumes:
+      - /data
+      - ./setup_sentinel.sh:/data/setup_sentinel.sh
+    command: >
+      /bin/bash -c "chmod +x /data/setup_sentinel.sh &&
+      /data/setup_sentinel.sh &&
+      redis-sentinel /data/sentinel.conf --port 26379"
+
+  sentinel2:
+    image: redis:latest
+    container_name: sentinel-2
+    network_mode: host
+    volumes:
+      - /data
+      - ./setup_sentinel.sh:/data/setup_sentinel.sh
+    command: >
+      /bin/bash -c "chmod +x /data/setup_sentinel.sh &&
+      /data/setup_sentinel.sh &&
+      redis-sentinel /data/sentinel.conf --port 26380"
+
+  sentinel3:
+    image: redis:latest
+    container_name: sentinel-3
+    network_mode: host
+    volumes:
+      - /data
+      - ./setup_sentinel.sh:/data/setup_sentinel.sh
+    command: >
+      /bin/bash -c "chmod +x /data/setup_sentinel.sh &&
+      /data/setup_sentinel.sh &&
+      redis-sentinel /data/sentinel.conf --port 26381"
